@@ -1,26 +1,37 @@
 const express = require("express");
+const userRouter = require("./routes/users/userRoutes");
+const postRouter = require("./routes/posts/postRoutes");
+const commentRouter = require("./routes/comments/commentRoutes");
+const categoryRouter = require("./routes/categories/categoryRoutes");
+
 require("dotenv").config();
 
 require("./config/dbConnect");
 const app = express();
 
 //middleware
+
+
 //routes
 // error handler
 // listen to server
 
-// users routes
-app.post("/api/v1/users/register", async () => {
-  try {
-    res.json({
-      status: "success",
-      data: "User registered",
-    });
-  } catch (e) {
-    res.json(e.message);
-  }
-});
+app.use(express.json())
 
+// --------- users routes -------
+app.use("/api/v1/users/", userRouter);
+
+// --------- posts routes -------
+
+app.use("/api/v1/posts", postRouter);
+
+// ------------ comments routes -------------
+
+app.use("/api/v1/comments", commentRouter);
+
+// ---------- categories routes ------------
+
+app.use("/api/v1/categories", categoryRouter);
 
 const PORT = process.env.PORT || 9000;
 

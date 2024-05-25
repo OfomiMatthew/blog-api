@@ -1,5 +1,14 @@
+const mongoose = require('mongoose');
 const User = require("../../model/User/User");
 const bcrypt = require("bcryptjs");
+const generateToken = require("../../utils/generateToken");
+const getTokenFromHeader = require("../../utils/getTokenFromHeader");
+
+
+
+
+
+
 
 const userRegisterController = async (req, res) => {
   const { firstname, lastname, profilePhoto, email, password } = req.body;
@@ -55,7 +64,13 @@ const userLoginController = async (req, res) => {
     res.json({
       status: "success",
       message: "User logged in",
-      data:userFound
+      data:{
+        firstname:userFound.firstname,
+        lastname:userFound.lastname,
+        email:userFound.email,
+        isAdmin:userFound.isAdmin,
+        token:generateToken(userFound._id),
+      },
     });
   } catch (e) {
     res.json(e.message);
@@ -63,16 +78,20 @@ const userLoginController = async (req, res) => {
 };
 
 const userProfileController = async (req, res) => {
-  const {id} = req.params
+//  console.log(req.userAuth)
+//   const {id} = req.params
   try {
-    const user = await User.findById(id)
+   const token = getTokenFromHeader(req)
+   console.log(token)
+
+    const user = await User.findById(req.userAuth)
 
     return res.json({
       status: "success",
       data: user,
     });
   } catch (e) {
-    res.json(e.message);
+    return res.status(500).json({message:e.message});
   }
 };
 

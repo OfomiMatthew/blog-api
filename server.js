@@ -3,6 +3,8 @@ const userRouter = require("./routes/users/userRoutes");
 const postRouter = require("./routes/posts/postRoutes");
 const commentRouter = require("./routes/comments/commentRoutes");
 const categoryRouter = require("./routes/categories/categoryRoutes");
+const globalErrorHandler = require("./middlewares/globalErrorHandler");
+
 
 require("dotenv").config();
 
@@ -13,8 +15,6 @@ const app = express();
 
 
 //routes
-// error handler
-// listen to server
 
 app.use(express.json())
 
@@ -33,6 +33,20 @@ app.use("/api/v1/comments", commentRouter);
 
 app.use("/api/v1/categories", categoryRouter);
 
+
+// error handler
+app.use(globalErrorHandler)
+
+
+// 404 error
+app.use('*',(req,res)=>{
+    res.status(404).json({
+        message:`${req.originalUrl} - Route Not Found!`
+    })
+})
+
+
+// listen to server
 const PORT = process.env.PORT || 9000;
 
 app.listen(PORT, console.log(`server running on ${PORT}`));
